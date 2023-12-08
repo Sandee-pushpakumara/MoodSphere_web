@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Testimonial Slider</title>
+    <style>
+      /* Add your CSS styling here */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #f5f5f5;
+      }
+      .slider-container {
+        width: 300px;
+        overflow: hidden;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+      }
+      .slider {
+        display: flex;
+        transition: transform 0.5s ease-in-out;
+      }
+      .testimonial-card {
+        flex: 0 0 100%;
+        padding: 20px;
+        text-align: center;
+        background-color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="slider-container">
+      <div class="slider">
+        <div class="testimonial-card">Testimonial 1</div>
+        <div class="testimonial-card">Testimonial 2</div>
+        <div class="testimonial-card">Testimonial 3</div>
+        <!-- Add more testimonial cards as needed -->
+      </div>
+    </section>
+    <script>
+      // JavaScript for the slider functionality
+      const slider = document.querySelector(".slider");
+      let isDragging = false;
+      let startPos = 0;
+      let currentTranslate = 0;
+      let prevTranslate = 0;
+      let animationID = 0;
+      let currentIndex = 0;
+
+      // Slide the testimonials
+      const slide = (index) => {
+        if (index < 0) index = 0;
+        if (index > 2) index = 2;
+        currentIndex = index;
+        currentTranslate = index * -300;
+        prevTranslate = currentTranslate;
+        setSliderPosition();
+      };
+
+      // Set slider position
+      const setSliderPosition = () => {
+        slider.style.transform = `translateX(${currentTranslate}px)`;
+      };
+
+      // Touch events
+      slider.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        startPos = e.clientX;
+        animationID = requestAnimationFrame(animation);
+      });
+
+      slider.addEventListener("mouseup", () => {
+        isDragging = false;
+        cancelAnimationFrame(animationID);
+        const movedBy = currentTranslate - prevTranslate;
+        if (movedBy < -30 && currentIndex < 2) currentIndex += 1;
+        if (movedBy > 30 && currentIndex > 0) currentIndex -= 1;
+        slide(currentIndex);
+      });
+
+      slider.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+        const currentPosition = e.clientX;
+        const moveBy = currentPosition - startPos;
+        currentTranslate = prevTranslate + moveBy;
+        setSliderPosition();
+      });
+
+      // Animation
+      const animation = () => {
+        setSliderPosition();
+        if (isDragging) requestAnimationFrame(animation);
+      };
+
+      // Touch support on mobile devices
+      slider.addEventListener("touchstart", (e) => {
+        isDragging = true;
+        startPos = e.touches[0].clientX;
+        animationID = requestAnimationFrame(animation);
+      });
+
+      slider.addEventListener("touchend", () => {
+        isDragging = false;
+        cancelAnimationFrame(animationID);
+        const movedBy = currentTranslate - prevTranslate;
+        if (movedBy < -30 && currentIndex < 2) currentIndex += 1;
+        if (movedBy > 30 && currentIndex > 0) currentIndex -= 1;
+        slide(currentIndex);
+      });
+
+      slider.addEventListener("touchmove", (e) => {
+        if (!isDragging) return;
+        const currentPosition = e.touches[0].clientX;
+        const moveBy = currentPosition - startPos;
+        currentTranslate = prevTranslate + moveBy;
+        setSliderPosition();
+      });
+    </script>
+  </body>
+</html>
